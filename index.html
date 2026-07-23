@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Happy Birthday</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Segoe UI;
+        background: linear-gradient(#ffd6e8, #fff0f6);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+      canvas,
+      #hearts {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+      }
+      #wrap {
+        text-align: center;
+        z-index: 2;
+      }
+      .envelope {
+        position: relative;
+        width: 320px;
+        height: 210px;
+        background: #ff6fa8;
+        border-radius: 12px;
+        cursor: pointer;
+        box-shadow: 0 8px 20px #0003;
+        margin: auto;
+      }
+      .flap {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-left: 160px solid transparent;
+        border-right: 160px solid transparent;
+        border-top: 105px solid #ff9cc4;
+        transform-origin: top;
+        transition: 1s;
+      }
+      .icon {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -30%);
+        font-size: 42px;
+      }
+      .tip {
+        margin-top: 15px;
+        color: #d81b60;
+        font-weight: bold;
+      }
+      .card {
+        display: none;
+        background: #fff;
+        border-radius: 18px;
+        padding: 25px;
+        max-width: 560px;
+        box-shadow: 0 8px 20px #0002;
+      }
+      .marq {
+        overflow: hidden;
+        border-top: 2px dashed pink;
+        border-bottom: 2px dashed pink;
+        margin-bottom: 15px;
+      }
+      .marq span {
+        display: inline-block;
+        white-space: nowrap;
+        animation: m 18s linear infinite;
+        color: #e91e63;
+        font-weight: bold;
+      }
+      @keyframes m {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(-100%);
+        }
+      }
+      .heart {
+        position: absolute;
+        bottom: -30px;
+        animation: f linear forwards;
+      }
+      @keyframes f {
+        to {
+          transform: translateY(-120vh) translateX(var(--x));
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div id="hearts"></div>
+    <div id="wrap">
+      <div class="envelope" id="env">
+        <div class="flap"></div>
+        <div class="icon">🎂</div>
+      </div>
+      <div class="tip" id="tip">Ấn để mở 💌</div>
+      <div class="card" id="card">
+        <div class="marq">
+          <span>💖 Gửi em: Bông Yêu Của anh❤️ 💖</span>
+        </div>
+        <h2 style="color: #e91e63">🎉 Chúc Mừng Sinh Nhật Bông Yêu 🎉</h2>
+        <p>
+          Gửi em: Đặng Lê Minh Châu ( Bông Yêu 🌨️) của anh. Hôm nay là ngày mà
+          một năm mới có một lần ngày mà em bước sang một tuổi mới, một trang
+          mới trong đười, và là ngày mà em cảm thấy vui nhất hạnh phúc nhất và
+          anh muốn gửi đến em tình yêu của anh có một tuổi mới thật vui vẻ, hạnh
+          phúc luôn tươi cười, luôn dịu dàng. AnhYeuEm ❤️
+        </p>
+        <div style="font-size: 42px">💐🌹🌸🌸🌹💐</div>
+      </div>
+    </div>
+    <script>
+      const env = document.getElementById("env"),
+        card = document.getElementById("card"),
+        tip = document.getElementById("tip"),
+        hc = document.getElementById("hearts");
+      const cv = document.getElementById("c"),
+        ctx = cv.getContext("2d");
+      function rs() {
+        cv.width = innerWidth;
+        cv.height = innerHeight;
+      }
+      onresize = rs;
+      rs();
+      let pts = [];
+      function boom(x, y) {
+        let col = ["#f06", "#fc0", "#6ff", "#9f3", "#fff"];
+        for (let i = 0; i < 80; i++)
+          pts.push({
+            x,
+            y,
+            a: Math.random() * 6.28,
+            s: 2 + Math.random() * 5,
+            o: 1,
+            c: col[(Math.random() * col.length) | 0],
+          });
+      }
+      (function loop() {
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        pts = pts.filter((p) => p.o > 0);
+        for (let p of pts) {
+          p.x += Math.cos(p.a) * p.s;
+          p.y += Math.sin(p.a) * p.s + 0.04;
+          p.o -= 0.015;
+          ctx.globalAlpha = p.o;
+          ctx.fillStyle = p.c;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 2, 0, 7);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(loop);
+      })();
+      function heart() {
+        let e = document.createElement("div");
+        e.className = "heart";
+        e.textContent = ["💖", "💕", "💗", "❤"][(Math.random() * 4) | 0];
+        e.style.left = Math.random() * 100 + "vw";
+        e.style.fontSize = 18 + Math.random() * 24 + "px";
+        e.style.animationDuration = 5 + Math.random() * 4 + "s";
+        e.style.setProperty("--x", Math.random() * 200 - 100 + "px");
+        hc.appendChild(e);
+        setTimeout(() => e.remove(), 9000);
+      }
+      env.addEventListener("click", () => {
+        document.querySelector(".flap").style.transform = "rotateX(180deg)";
+        setTimeout(() => {
+          env.style.display = "none";
+          tip.style.display = "none";
+          card.style.display = "block";
+          for (let i = 0; i < 6; i++)
+            setTimeout(() => boom(innerWidth / 2, innerHeight / 2), i * 350);
+          setInterval(() => {
+            heart();
+            if (Math.random() > 0.5) heart();
+          }, 250);
+        }, 1000);
+      });
+    </script>
+  </body>
+</html>
